@@ -1,0 +1,17 @@
+add_executable(app app.cpp)
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(app PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+    find_package(CUDAToolkit)
+    target_link_libraries(app PUBLIC CUDA::cudart)
+    target_link_libraries(app PUBLIC CUDA::cuda_driver)
+else()
+    message(STATUS "No CUDA compiler found")
+endif()
