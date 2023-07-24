@@ -1,17 +1,17 @@
-add_executable(app app.cpp)
 
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(app PUBLIC OpenMP::OpenMP_CXX)
-endif()
 
-include(CheckLanguage)
-check_language(CUDA)
-if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-    find_package(CUDAToolkit)
-    target_link_libraries(app PUBLIC CUDA::cudart)
-    target_link_libraries(app PUBLIC CUDA::cuda_driver)
-else()
-    message(STATUS "No CUDA compiler found")
-endif()
+
+include_directories(${CMAKE_SOURCE_DIR}/include/LivingSpheres)
+add_executable(app 
+    app.cpp 
+    ../include/LivingSpheres/simulator.cu 
+    ../include/LivingSpheres/simulator.h
+    ../include/LivingSpheres/user_interface.h
+
+    )
+
+include_directories(${X11_INCLUDE_DIR})
+
+target_link_libraries(app PRIVATE X11 CUDA::cudart CUDA::cuda_driver OpenMP::OpenMP_CXX)
+target_compile_options(app PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -Xcompiler=-fopenmp>)
+
